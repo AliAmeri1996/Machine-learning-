@@ -1,0 +1,193 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyOanf2fa3Wa8FuEdUOisjWG",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/AliAmeri1996/Machine-learning-/blob/main/Polynomial%20Test\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 1,
+      "metadata": {
+        "id": "t3deOKiFuaH3"
+      },
+      "outputs": [],
+      "source": [
+        "import matplotlib.pyplot as plt\n",
+        "import pandas as pd\n",
+        "from sklearn import linear_model\n",
+        "from sklearn.metrics import r2_score\n",
+        "import numpy as np\n",
+        "from sklearn.preprocessing import PolynomialFeatures\n"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "url=\"https://raw.githubusercontent.com/jadijadi/machine_learning_with_python_jadi/main/FuelConsumption.csv\"\n",
+        "d=pd.read_csv(url)\n",
+        "d"
+      ],
+      "metadata": {
+        "id": "btVxmrbquhpo"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "mask=np.random.rand(len(d))<0.8 # 80% True, 80 is for train.\n",
+        "mask\n",
+        "print(len(d))\n",
+        "train=d[mask]\n",
+        "print(len(train))\n",
+        "test=d[~mask]\n",
+        "print(len(test))"
+      ],
+      "metadata": {
+        "id": "F0eVL1BYuqZ5"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "\n",
+        "train_x=train[['ENGINESIZE']]\n",
+        "b=[]\n",
+        "l=[]\n",
+        "for n in range(2,20):\n",
+        " l.append(n)\n",
+        " p=PolynomialFeatures(degree=n)\n",
+        " train_x_p=p.fit_transform(train_x)\n",
+        " train_y=train[['CO2EMISSIONS']]\n",
+        " r=linear_model.LinearRegression()\n",
+        " r.fit(train_x_p,train_y)\n",
+        " a=r.coef_\n",
+        " c=r.intercept_\n",
+        " print(\"coefficint is\",a,\"and the intercept is\",c)\n",
+        " test_x=test[['ENGINESIZE']]\n",
+        " test_x_p=p.fit_transform(test_x)\n",
+        " test_y=test[['CO2EMISSIONS']]\n",
+        " test_p=r.predict(test_x_p)\n",
+        " r2=r2_score(test_p,test_y)\n",
+        " print(r2)\n",
+        " b.append(r2)\n",
+        "d=max(b)\n",
+        "f=b.index(d)\n",
+        "print(f)\n",
+        "print(l[f])\n",
+        "u=(l[f])\n"
+      ],
+      "metadata": {
+        "id": "VQy9P1m4vCv0"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "fig=plt.figure()\n",
+        "ax=fig.add_subplot()\n",
+        "ax.set_xlabel(\"Degree\")\n",
+        "ax.set_ylabel(\"R2\")\n",
+        "ax.scatter(l,b)"
+      ],
+      "metadata": {
+        "id": "Jg4CxID_ZMyu"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "print(train_x)\n",
+        "train_x_p\n"
+      ],
+      "metadata": {
+        "id": "sJZBNuOAwSIk"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "p=PolynomialFeatures(degree=u)\n",
+        "train_x_p=p.fit_transform(train_x)\n",
+        "train_y=train[['CO2EMISSIONS']]\n",
+        "r=linear_model.LinearRegression()\n",
+        "r.fit(train_x_p,train_y)\n",
+        "a=r.coef_\n",
+        "c=r.intercept_"
+      ],
+      "metadata": {
+        "id": "2xIo6lINavdH"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "fig=plt.figure()\n",
+        "ax=fig.add_subplot()\n",
+        "ax.scatter(train['ENGINESIZE'],train['CO2EMISSIONS'],color=\"blue\")\n",
+        "ax.scatter(test['ENGINESIZE'],test['CO2EMISSIONS'],color=\"green\")\n",
+        "ax.set_xlabel(\"Engine size\")\n",
+        "ax.set_ylabel(\"CO2 Emission\")\n",
+        "ax.set_title(\"The CO2 emission chart\")\n",
+        "ax.spines['right'].set_visible(False)\n",
+        "ax.spines['top'].set_visible(False)\n",
+        "x=np.arange(1,9,0.1)\n",
+        "plt.plot(x,a[0][1]*x+a[0][2]*x**2+a[0][3]*x**3+c)"
+      ],
+      "metadata": {
+        "id": "EHsj6_PKypBb"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "test_x=test[['ENGINESIZE']]\n",
+        "test_x_p=p.fit_transform(test_x)\n",
+        "test_y=test[['CO2EMISSIONS']]\n",
+        "test_p=r.predict(test_x_p)\n",
+        "r2=r2_score(test_p,test_y)\n",
+        "print(r2)"
+      ],
+      "metadata": {
+        "id": "QBzbLUzc2wHB"
+      },
+      "execution_count": null,
+      "outputs": []
+    }
+  ]
+}
